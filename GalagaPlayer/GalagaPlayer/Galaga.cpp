@@ -403,9 +403,23 @@ void Galaga::render(sf::RenderWindow *window, int originKeyState)
 	sf::Event event;
 	while (window->pollEvent(event))
 	{
-		if (event.type == sf::Event::Closed || GetKeyState(27) == 1 - originKeyState||lives<0)//x button or escape key
+		if (event.type == sf::Event::Closed || GetKeyState(27) == 1 - originKeyState)//x button or escape key
 			window->close();
 	}
+
+
+	sf::Texture backgroundTexture;
+	backgroundTexture.loadFromFile("background.png");
+
+	sf::Sprite background;
+	background.setTexture(backgroundTexture);
+	if (backgroundScroll <= 0)
+		backgroundScroll = 322;
+	background.setTextureRect(sf::IntRect(0, backgroundScroll, 250, 322));
+	background.setPosition(0, 0);
+
+	backgroundScroll -= 2;
+
 
 	sf::Texture texture;
 	texture.loadFromFile("GalagaSprites.png");
@@ -434,13 +448,8 @@ void Galaga::render(sf::RenderWindow *window, int originKeyState)
 
 
 	window->clear();
+	window->draw(background);
 	window->draw(playerSprite);
-	for (int i = 0; i < lives; i++)
-	{
-		playerSprite.setTextureRect(sf::IntRect(184, 55, 16, 16));
-		playerSprite.setPosition(sf::Vector2f(16*i,300));
-		window->draw(playerSprite);		
-	}
 	for (int i = 0; i < bullets.size(); i++)
 	{
 		if (/*(bullets.at(i))->getEnemy()*/false)
@@ -456,10 +465,16 @@ void Galaga::render(sf::RenderWindow *window, int originKeyState)
 
 	for (int i = 0; i < enemies.size(); i++)
 	{
+		switch (enemies.at(i)->identity())
+		{
+		case 4:
 			beeSprite.setTextureRect(enemies.at(i)->textureLocation());
 			beeSprite.setPosition((enemies.at(i)->getPos())[0], (enemies.at(i)->getPos())[1]);
 			window->draw(beeSprite);
+			break;
+		}
 	}
+
 	window->display();
 }
 
